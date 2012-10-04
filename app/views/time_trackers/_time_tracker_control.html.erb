@@ -30,7 +30,13 @@
                 </div>
               </div>
               <% projects = User.current.memberships.collect(&:project).compact.uniq %>
-              <% @time_tracker.project_id.nil? ? select = nil : select = Project.find(@time_tracker.project_id) %>
+              <% unless @time_tracker.project_id.nil? %>
+	              <% tt_project = Project.find(@time_tracker.project_id) %>
+	              <% projects << tt_project unless projects.include?(tt_project) %>
+	              <% select = Project.find(@time_tracker.project_id) %>
+              <% else %>
+              	<% select = nil %>
+              <% end %>
               <% proj_list = "<option value=''>#{ l(:time_tracker_label_none) }</option>" %>
               <% proj_list << "<option value='' disabled='disabled'>---</option>" %>
               <% proj_list = proj_list.html_safe %>
