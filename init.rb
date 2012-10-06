@@ -28,9 +28,9 @@ Redmine::Plugin.register :redmine_time_tracker do
   author 'David S Anderson'
   author_url 'https://github.com/ande3577/'
   description 'https://github.com/ande3577/redmine_time_tracker'
-  version '0.5.0'
+  version '0.5.1'
 
-  requires_redmine :version_or_higher => '2.0.0'
+  requires_redmine :version_or_higher => '2.1.0'
 
   #settings :default => {:refresh_rate => '60', :status_transitions => {}}, :partial => 'settings/time_tracker'
   settings :default => {:report_title => 'Report', :report_logo_url => '', :report_logo_width => '150', :stop_on_close => '0'}, :partial => 'settings/time_tracker'
