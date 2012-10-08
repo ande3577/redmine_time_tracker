@@ -125,7 +125,7 @@ class TimeBooking < ActiveRecord::Base
   end
 
   def issue_id
-    if self.time_entry.nil?
+    if self.time_entry.nil? || self.time_entry.issue.nil?
       l(:time_tracker_label_none)
     else
       self.time_entry.issue.id.to_s
