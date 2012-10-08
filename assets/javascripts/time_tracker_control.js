@@ -39,7 +39,7 @@ function updateTTControllerForm(obj) {
 // ================== time_tracker_control add auto-completers ============================
 $(function () {
     $('#time_tracker_issue_id').autocomplete({
-        source:'tt_completer/get_issue.json',
+        source:'tt_completer/get_issue',
         minLength:0,
         select:function (event, ui) {
             $('#time_tracker_comments').val(ui.item.data);
@@ -50,7 +50,7 @@ $(function () {
 
 $(function () {
     $('#time_tracker_comments').autocomplete({
-        source:'tt_completer/get_issue.json',
+        source:'tt_completer/get_issue',
         minLength:0,
         select:function (event, ui) {
             if (this.form.id == "new_time_tracker") {
