@@ -9,9 +9,11 @@ class TimeTrackerHooks < Redmine::Hook::ViewListener
   end
   
   render_on :view_my_account, :partial => 'account_settings/time_tracker_account_settings', :layout => false
-  
+  render_on :view_users_form, :partial => 'account_settings/time_tracker_account_settings', :layout => false
+    
   render_on :view_projects_show_sidebar_bottom, :partial => 'projects/time_tracker_projects_show_sidebar_bottom', :layout => false
   render_on :view_issues_sidebar_queries_bottom, :partial => 'projects/time_tracker_projects_show_sidebar_bottom', :layout => false
+
   
   
 end
