@@ -3,7 +3,7 @@
 function updateTTControllerForm(obj) {
     if (obj.nodeName == "FORM") {
         var form = obj;
-        $.ajax({url:'time_trackers/update.json?' + $("#" + form.id).serialize(),
+        $.ajax({url:'time_trackers/update?' + $("#" + form.id).serialize(),
             type:'PUT',
             success:function (transport) {
                 var tt = transport.time_tracker;

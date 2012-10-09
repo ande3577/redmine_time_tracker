@@ -23,6 +23,7 @@
           <% previous_group = false %>
           <tbody>
           <% bookings.each do |entry| -%>
+            <% if !entry.nil? && !entry.time_entry.nil? %>
               <% # workaround to enable group_by function with special columns   %>
               <% if @query.grouped? %>
                   <% gb_col = @query.group_by_column %>
@@ -61,6 +62,7 @@
                 <!-- following line should contain a link to the time_bookings! again, look at the issues\_list -->
                 <%= raw query.columns.map { |column| "<td class=\"#{column.css_classes}\">#{column_content(column, entry)}</td>" }.join %>
               </tr>
+            <% end %>
           <% end -%>
           </tbody>
         </table>

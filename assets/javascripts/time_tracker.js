@@ -13,7 +13,7 @@ function get_time_span(time, obj) {
     var date1 = $('#values_tt_start_date_1').val();
     var date2 = $('#values_tt_start_date_2').val();
 
-    $.ajax({url:'tt_date_shifter/' + action + '.json?date1=' + date1 + '&date2=' + date2,
+    $.ajax({url:'tt_date_shifter/' + action + '?date1=' + date1 + '&date2=' + date2,
         type:'GET',
         success:function (transport) {
 
@@ -63,7 +63,7 @@ function updateBookingProject(name) {
         project_id_select.attr('disabled', false);
         issue_id_field.removeClass('invalid');
     } else {
-        $.ajax({url:'/issues/' + issue_id + '.json',
+        $.ajax({url:'/issues/' + issue_id,
             type:'GET',
             success:function (transport) {
                 issue_id_field.removeClass('invalid');
