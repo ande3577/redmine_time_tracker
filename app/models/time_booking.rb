@@ -89,7 +89,7 @@ class TimeBooking < ActiveRecord::Base
 
   # this method is necessary to change start and stop at the same time without leaving boundaries
   def update_time(start, stop)
-    return if start < self.time_log.started_on || start >= self.time_log.stopped_at || stop <= self.time_log.started_on || stop > self.time_log.stopped_at || start == stop
+    return if start == stop
 
     write_attribute(:started_on, start)
     write_attribute(:stopped_at, stop)
