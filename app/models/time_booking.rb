@@ -20,7 +20,7 @@ class TimeBooking < ActiveRecord::Base
       logger.debug "Time booking created with args: #{args}"
       # without issue_id, create an virtual booking!
       if args[:issue].nil?
-        time_entry = create_time_entry({:user_id => args[:user_id], :comments => args[:comments], :started_on => args[:started_on], :activity_id => args[:activity_id], :hours => args[:hours], :project_id => args[:project_id]})
+        time_entry = create_time_entry({:user_id => args[:user_id], :comments => args[:comments], :started_on => args[:started_on].localtime, :activity_id => args[:activity_id], :hours => args[:hours], :project_id => args[:project_id]})
         super({:time_entry_id => time_entry.id, :time_log_id => args[:time_log_id], :started_on => args[:started_on], :stopped_at => args[:stopped_at], :project_id => args[:project_id]})
       else
         # create a normal booking
@@ -29,7 +29,7 @@ class TimeBooking < ActiveRecord::Base
         # but in any way, the user_id which will be stored, is the user_id from the timeLog. this way the admin can book
         # times for any of his users..
           # TODO check for user-specific setup (limitations for bookable times etc)
-        time_entry = create_time_entry({:issue => args[:issue], :user_id => args[:user_id], :comments => args[:comments], :started_on => args[:started_on], :activity_id => args[:activity_id], :hours => args[:hours]})
+        time_entry = create_time_entry({:issue => args[:issue], :user_id => args[:user_id], :comments => args[:comments], :started_on => args[:started_on].localtime, :activity_id => args[:activity_id], :hours => args[:hours]})
         super({:time_entry_id => time_entry.id, :time_log_id => args[:time_log_id], :started_on => args[:started_on], :stopped_at => args[:stopped_at], :project_id => args[:issue].project.id})
       end
     end
