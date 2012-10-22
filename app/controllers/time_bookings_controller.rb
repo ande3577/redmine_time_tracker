@@ -36,8 +36,7 @@ class TimeBookingsController < ApplicationController
 
       time_booking.update_time(start, stop)
 
-      time_booking.issue = issue
-      time_booking.project = project if issue.nil?
+      time_booking.update_issue_project(:issue => issue, :project => project)
       time_booking.comments = tb[:comments]
 
       time_booking.save!

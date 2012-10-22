@@ -53,38 +53,56 @@ class TimeBooking < ActiveRecord::Base
   end
 
   # we have to redefine some setters, to ensure a convenient way to update these attributes
-
-  def issue=(issue)
+  def update_issue_project(params = {})
     return unless self.user.id == User.current.id || User.current.admin? # users should only change their own entries or be admin
+    
     user = self.user # use the user-info from the TimeLog, so the admin can change normal users entries too...
     comments = self.comments # store comments temporarily to swap them to the new place
-
-    # we only have to do something if the issue really changes
-    if issue.nil? && self.issue != l(:time_tracker_label_none) # self not virtual but new issue is nil => self became virtual
-      self.time_entry.destroy
-
+    
+    issue = params[:issue]
+    project = params[:project]
+    
+    # if getting rid of both project and issue
+    if project.nil? && issue.nil?
+      self.time_entry.destroy unless self.time_entry.nil?
       write_attribute(:virtual, true)
       write_attribute(:comments, comments) # should create a virtual comment
-    elsif !issue.nil? && issue.id != self.issue_id && user.allowed_to?(:log_time, issue.project) # issue changes
-      if self.virtual? # self.virtual is true, than we've got a new issue due to the statement ahead. so we change from virtual to normal booking!
-        self.virtual_comment.destroy
-        write_attribute(:virtual, false)
-      else # self not virtual? => we get a new issue, so we have to delete the old linkage
-        self.time_entry.destroy
+    elsif !issue.nil?
+      if issue.id != self.issue_id && user.allowed_to?(:log_time, issue.project)
+        write_attribute(:issue_id, issue.id)
+        write_attribute(:project_id, nil)
+          
+        if self.virtual? # self.virtual is true, than we've got a new issue due to the statement ahead. so we change from virtual to normal booking!
+          self.virtual_comment.destroy
+          write_attribute(:virtual, false)
+        else # self not virtual? => we get a new issue, so we have to delete the old linkage
+          self.time_entry.destroy
+        end
+        
+        tea = TimeEntryActivity.where(:name => :time_tracker_activity).first
+        time_entry = create_time_entry({:issue => issue, :user_id => user, :comments => comments, :started_on => self.started_on, :activity_id => tea.id, :hours => self.hours_spent})
+  
+        write_attribute(:time_entry_id, time_entry.id)
+        write_attribute(:project_id, issue.project.id)
       end
-
-      tea = TimeEntryActivity.where(:name => :time_tracker_activity).first
-      time_entry = create_time_entry({:issue => issue, :user_id => user, :comments => comments, :started_on => self.started_on, :activity_id => tea.id, :hours => self.hours_spent})
-
-      write_attribute(:time_entry_id, time_entry.id)
-      write_attribute(:project_id, issue.project.id)
+    else
+      if (!self.issue.nil? || project.id != self.project_id) && user.allowed_to?(:log_time, project)
+        write_attribute(:issue_id, nil)
+        write_attribute(:project_id, project.id)
+        
+        if self.virtual? # self.virtual is true, than we've got a new issue due to the statement ahead. so we change from virtual to normal booking!
+          self.virtual_comment.destroy
+          write_attribute(:virtual, false)
+        else # self not virtual? => we get a new issue, so we have to delete the old linkage
+          self.time_entry.destroy
+        end
+  
+        tea = TimeEntryActivity.where(:name => :time_tracker_activity).first
+        time_entry = create_time_entry({:project_id => project.id, :user_id => user, :comments => comments, :started_on => self.started_on, :activity_id => tea.id, :hours => self.hours_spent})
+  
+        write_attribute(:time_entry_id, time_entry.id)
+      end
     end
-  end
-
-  def project=(project)
-    # only virtual bookings can choose projects. otherwise, the project will be set through the issue
-    write_attribute(:project_id, nil) if self.virtual? && project.nil?
-    write_attribute(:project_id, project.id) if self.virtual? && self.user.allowed_to?(:log_time, project)
   end
 
   # this method is necessary to change start and stop at the same time without leaving boundaries
