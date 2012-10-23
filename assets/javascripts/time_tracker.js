@@ -62,6 +62,7 @@ function updateBookingProject(name) {
     if (!issue_id || $.trim(issue_id) === "") {
         project_id_select.attr('disabled', false);
         issue_id_field.removeClass('invalid');
+        project_id_field.val(project_id_select.val());
     } else {
         $.ajax({url:'/issues/' + issue_id,
             type:'GET',
@@ -70,6 +71,7 @@ function updateBookingProject(name) {
                 var issue = transport.issue;
                 if (issue == null) {
                     project_id_select.attr('disabled', false);
+                    project_id_field.val(project_id_select.val());
                 } else {
                     project_id_select.attr('disabled', true);
                     project_id_field.val(issue.project.id);
@@ -79,6 +81,7 @@ function updateBookingProject(name) {
             error:function () {
                 project_id_select.attr('disabled', false);
                 issue_id_field.addClass('invalid');
+                project_id_field.val(project_id_select.val());
             }
         });
     }
