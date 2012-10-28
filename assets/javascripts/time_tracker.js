@@ -64,7 +64,8 @@ function updateBookingProject(name) {
         issue_id_field.removeClass('invalid');
         project_id_field.val(project_id_select.val());
     } else {
-        $.ajax({url:'/issues/' + issue_id,
+        $.ajax({url:'/time_bookings/get_issue',
+        	data: { issue_id: issue_id },
             type:'GET',
             success:function (transport) {
                 issue_id_field.removeClass('invalid');
@@ -74,8 +75,8 @@ function updateBookingProject(name) {
                     project_id_field.val(project_id_select.val());
                 } else {
                     project_id_select.attr('disabled', true);
-                    project_id_field.val(issue.project.id);
-                    $("#" + project_id_select.attr("id")).val(issue.project.id);
+                    project_id_field.val(issue.project_id);
+                    $("#" + project_id_select.attr("id")).val(issue.project_id);
                 }
             },
             error:function () {

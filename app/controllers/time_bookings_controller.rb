@@ -1,7 +1,7 @@
 class TimeBookingsController < ApplicationController
   unloadable
 
-  before_filter :authorize_global
+  before_filter :js_auth, :authorize_global
 
   include TimeTrackersHelper
 
@@ -22,6 +22,14 @@ class TimeBookingsController < ApplicationController
       format.js
     end
   end
+  
+  def get_issue
+    issue = Issue.where(:id => params[:issue_id]).first
+    respond_to do |format|
+      format.json { render :json => issue }
+    end
+  end
+    
 
   def update(tb)
     time_booking = TimeBooking.where(:id => tb[:id]).first
@@ -63,6 +71,14 @@ class TimeBookingsController < ApplicationController
     @entry = TimeBooking.where(:id => params[:time_booking_id]).first
     respond_to do |format|
       format.js
+    end
+  end
+  
+  # following method is necessary to got ajax requests logged_in
+  def js_auth
+    respond_to do |format|
+      format.json { User.current = User.where(:id => session[:user_id]).first }
+      format.any {}
     end
   end
 end
