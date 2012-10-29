@@ -64,8 +64,7 @@ function updateBookingProject(name) {
         issue_id_field.removeClass('invalid');
         project_id_field.val(project_id_select.val());
     } else {
-        $.ajax({url:'/time_bookings/get_issue',
-        	data: { issue_id: issue_id },
+        $.ajax({url:'/time_bookings/get_issue/' + issue_id,
             type:'GET',
             success:function (transport) {
                 issue_id_field.removeClass('invalid');

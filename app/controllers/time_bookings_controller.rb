@@ -1,7 +1,8 @@
 class TimeBookingsController < ApplicationController
   unloadable
 
-  before_filter :js_auth, :authorize_global
+  before_filter :js_auth, :only => [:get_issue]
+  before_filter :authorize_global
 
   include TimeTrackersHelper
 
@@ -24,7 +25,7 @@ class TimeBookingsController < ApplicationController
   end
   
   def get_issue
-    issue = Issue.where(:id => params[:issue_id]).first
+    issue = Issue.where(:id => params[:id]).first
     respond_to do |format|
       format.json { render :json => issue }
     end

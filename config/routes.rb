@@ -14,7 +14,7 @@ match '/time_logs/show_edit', :to => 'time_logs#show_edit', :via => [:get, :post
 match '/time_logs/get_list_entry', :to => 'time_logs#get_list_entry', :via => [:get, :post]
 match '/time_bookings/actions', :to => 'time_bookings#actions', :via => [:get, :post, :put]
 match '/time_bookings/show_edit', :to => 'time_bookings#show_edit', :via => [:get, :post]
-match '/time_bookings/get_issue', :to => 'time_bookings#get_issue', :via => [:get]
+match '/time_bookings/get_issue/:id', :to => 'time_bookings#get_issue', :via => [:get]
 match '/time_bookings/update', :to => 'time_bookings#update', :via => [:put]
 match '/time_bookings/delete', :to => 'time_bookings#delete', :via => [:get, :post]
 match '/time_bookings/get_list_entry', :to => 'time_bookings#get_list_entry', :via => [:get, :post]
