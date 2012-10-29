@@ -39,7 +39,7 @@ Redmine::Plugin.register :redmine_time_tracker do
     map.project_module :redmine_timetracker_plugin_settings do
       map.permission :use_time_tracker_plugin, {:time_trackers => [:start, :stop, :update, :delete],
                                                 :time_logs => [:actions, :update, :delete, :add_booking, :show_booking, :show_edit, :get_list_entry],
-                                                :time_bookings => [:actions, :show_edit, :update, :delete, :get_list_entry],
+                                                :time_bookings => [:actions, :show_edit, :update, :delete, :get_list_entry, :get_issue],
                                                 :time_list => [:index],
                                                 :tt_overview => [:index],
                                                 :tt_info => [:index],
