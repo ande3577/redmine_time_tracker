@@ -3,14 +3,14 @@
 	
 	<% if time_tracker_for(User.current).nil? %>
 		<% unless @issue.nil? %>
-			<%= time_tracker_button_tag(User.current, :project => @project, :issue => @issue ) %><br>
+			<%= time_tracker_button_tag(User.current, :project => @project, :issue => @issue ) %>
 		<% end %>
 		
 		<% @project.self_and_ancestors.reverse.each do |proj| %>
-			<%= time_tracker_button_tag(User.current, :project => proj, :issue => nil )  %><br>
+			<%= time_tracker_button_tag(User.current, :project => proj, :issue => nil )  %>
 		<% end %>
 	<% else %>
-		<%= time_tracker_button_tag(User.current, :project => @project, :issue => @issue ) %><br>
+		<%= time_tracker_button_tag(User.current, :project => @project, :issue => @issue ) %>
 	<% end %>
 		
 <% end %>

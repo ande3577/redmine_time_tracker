@@ -56,21 +56,21 @@ module ApplicationHelper
        else stop_label += ' ' + time_tracker.comments.to_s
        end 
        
-       link_to l(:stop_time_tracker).capitalize + stop_label,
-                   {:controller => '/time_trackers', :action => 'stop', :time_tracker => {}},
-                   :class => 'icon icon-stop'
+       "#{link_to l(:stop_time_tracker).capitalize + stop_label,
+         {:controller => '/time_trackers', :action => 'stop', :time_tracker => {}},
+         :class => 'icon icon-stop'}<br>".html_safe
      elsif !options[:project].nil? and user.allowed_to?(:use_time_tracker_plugin, nil, :global => true) and user.allowed_to?(:log_time, options[:project])
         # No time tracker is running, but the user has the rights to track time on this issue 
         # Display the start time tracker action
        if options[:issue].nil?
-         link_to l(:start_time_tracker).capitalize + ' ' +  options[:project].name,
+         "#{link_to l(:start_time_tracker).capitalize + ' ' +  options[:project].name,
              {:controller => '/time_trackers', :action => 'start', :time_tracker => {:project_id => options[:project].id}},
-           :class => 'icon icon-start'
+             :class => 'icon icon-start'}<br>".html_safe
        else
-         link_to l(:start_time_tracker).capitalize + ' #' +  options[:issue].id.to_s,
+          "#{link_to l(:start_time_tracker).capitalize + ' #' +  options[:issue].id.to_s,
              {:controller => '/time_trackers', :action => 'start', :time_tracker => {:issue_id => options[:issue].id,
              :project_id => options[:project].id}},
-           :class => 'icon icon-start'
+             :class => 'icon icon-start'}<br>".html_safe
        end 
 
      end 
