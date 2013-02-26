@@ -9,6 +9,8 @@ class TimeListController < ApplicationController
   helper :sort
   include SortHelper
   include TimeTrackersHelper
+  helper :issues
+  include IssuesHelper
 
   def index
     tt_retrieve_query
