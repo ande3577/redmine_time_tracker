@@ -98,7 +98,7 @@ class TimeBooking < ActiveRecord::Base
         end
   
         tea = TimeEntryActivity.where(:name => :time_tracker_activity).first
-        time_entry = create_time_entry({:project_id => project.id, :user_id => user, :comments => comments, :started_on => self.started_on, :activity_id => tea.id, :hours => self.hours_spent})
+        time_entry = create_time_entry({:project_id => project.id, :user_id => user.id, :comments => comments, :started_on => self.started_on, :activity_id => tea.id, :hours => self.hours_spent})
   
         write_attribute(:time_entry_id, time_entry.id)
       end
