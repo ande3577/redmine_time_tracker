@@ -24,17 +24,17 @@ module QueriesControllerPatch
         @query.tt_query = true
         @query.available_filters.delete_if { |key, value| !key.to_s.start_with?('tt_') }
         @query.available_columns.delete_if { |item| !([:id, :user, :project, :tt_booking_date, :get_formatted_start_time, :get_formatted_stop_time, :issue, :comments, :get_formatted_time].include? item.name) }
-        build_query_from_params
+        @query.build_from_params(params)
       end
     end
 
     def create_with_time_tracker
-      @query = Query.new(params[:query])
+      @query = IssueQuery.new(params[:query])
       @query.tt_query = (params[:tt_query] == "true" ? true : false)
       @query.user = User.current
       @query.project = params[:query_is_for_all] ? nil : @project
       @query.is_public = false unless User.current.allowed_to?(:manage_public_queries, @project) || User.current.admin?
-      build_query_from_params
+      @query.build_from_params(params)
       @query.column_names = nil if params[:default_columns]
 
       if @query.save
@@ -61,7 +61,7 @@ module QueriesControllerPatch
       @query.tt_query = (params[:tt_query] == "true" ? true : false)
       @query.project = nil if params[:query_is_for_all]
       @query.is_public = false unless User.current.allowed_to?(:manage_public_queries, @project) || User.current.admin?
-      build_query_from_params
+      @query.build_from_params(params)
       @query.column_names = nil if params[:default_columns]
 
       if @query.save

@@ -4,6 +4,14 @@ class TimeTrackersController < ApplicationController
   menu_item :time_tracker_menu_tab_overview
   before_filter :js_auth, :authorize_global
 
+  helper :issues
+  include IssuesHelper
+  helper :time_trackers
+  include TimeTrackersHelper  
+  helper :timelog
+  include TimelogHelper
+
+
   # we could start an empty timeTracker to track time without any association.
   # we also can give some more information, so the timeTracker could be automatically associated later.
   def start(args = {})

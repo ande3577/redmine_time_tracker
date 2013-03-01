@@ -72,7 +72,7 @@ module TimeTrackersHelper
     if !params[:query_id].blank?
       cond = "project_id IS NULL"
       cond << " OR project_id = #{@project.id}" if @project
-      @query = Query.find(params[:query_id], :conditions => cond)
+      @query = IssueQuery.find(params[:query_id], :conditions => cond)
       raise ::Unauthorized unless @query.visible?
       @query.project = @project
       session[:tt_query] = {:id => @query.id, :project_id => @query.project_id}
@@ -84,8 +84,8 @@ module TimeTrackersHelper
         session[:tt_user_logs_query].nil? && @query_give_logs ||
         session[:tt_user_bookings_query].nil? && @query_give_bookings
       # Give it a name, required to be valid
-      @query = Query.new(:tt_query => true, :name => "_")
-      build_query_from_params
+      @query = IssueQuery.new(:tt_query => true, :name => "_")
+      @query.build_from_params(params)
       sess_info = {:filters => @query.filters, :group_by => @query.group_by, :column_names => @query.column_names}
 
       if params[:set_filter] == "1" || session[:tt_query].nil? && !@query_give_logs && !@query_give_bookings # admins log-view
@@ -98,15 +98,15 @@ module TimeTrackersHelper
         @query_bookings = @query.clone
       end
     elsif @query_give_logs && !@query_give_bookings # get time_logs for overview page
-      @query_logs = Query.find_by_id(session[:tt_user_logs_query][:id]) if session[:tt_user_logs_query][:id]
-      @query_logs ||= Query.new(:tt_query => true, :name => "_", :filters => session[:tt_user_logs_query][:filters], :group_by => session[:tt_user_logs_query][:group_by], :column_names => session[:tt_user_logs_query][:column_names])
+      @query_logs = IssueQuery.find_by_id(session[:tt_user_logs_query][:id]) if session[:tt_user_logs_query][:id]
+      @query_logs ||= IssueQuery.new(:tt_query => true, :name => "_", :filters => session[:tt_user_logs_query][:filters], :group_by => session[:tt_user_logs_query][:group_by], :column_names => session[:tt_user_logs_query][:column_names])
     elsif !@query_give_logs && @query_give_bookings # get time_bookings for overview page
-      @query_bookings = Query.find_by_id(session[:tt_user_bookings_query][:id]) if session[:tt_user_bookings_query][:id]
-      @query_bookings ||= Query.new(:tt_query => true, :name => "_", :filters => session[:tt_user_bookings_query][:filters], :group_by => session[:tt_user_bookings_query][:group_by], :column_names => session[:tt_user_bookings_query][:column_names])
+      @query_bookings = IssueQuery.find_by_id(session[:tt_user_bookings_query][:id]) if session[:tt_user_bookings_query][:id]
+      @query_bookings ||= IssueQuery.new(:tt_query => true, :name => "_", :filters => session[:tt_user_bookings_query][:filters], :group_by => session[:tt_user_bookings_query][:group_by], :column_names => session[:tt_user_bookings_query][:column_names])
     else # get query for admins log-view
          # retrieve from session
-      @query = Query.find_by_id(session[:tt_query][:id]) if session[:tt_query][:id]
-      @query ||= Query.new(:tt_query => true, :name => "_", :filters => session[:tt_query][:filters], :group_by => session[:tt_query][:group_by], :column_names => session[:tt_query][:column_names])
+      @query = IssueQuery.find_by_id(session[:tt_query][:id]) if session[:tt_query][:id]
+      @query ||= IssueQuery.new(:tt_query => true, :name => "_", :filters => session[:tt_query][:filters], :group_by => session[:tt_query][:group_by], :column_names => session[:tt_query][:column_names])
     end
     @query.tt_query = true if @query
     @query_logs.tt_query = true if @query_logs

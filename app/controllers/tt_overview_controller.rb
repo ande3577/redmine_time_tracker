@@ -10,6 +10,8 @@ class TtOverviewController < ApplicationController
   include SortHelper
   helper :time_trackers
   include TimeTrackersHelper
+  helper :timelog
+  include TimelogHelper
 
   def index
     @time_tracker = get_current_time_tracker

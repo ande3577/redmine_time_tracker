@@ -83,6 +83,8 @@ module QueryPatch
       @available_columns = available_columns_without_time_tracker
       unless tt_query?
         @available_columns.delete_if { |item| [:issue, :comments, :user, :tt_booking_date, :tt_log_date, :get_formatted_start_time, :get_formatted_stop_time, :get_formatted_time, :get_formatted_bookable_hours].include? item.name }
+      else
+        @available_columns.delete_if { |item| [:id].include? item.name }
       end
       @available_columns
     end
@@ -98,7 +100,7 @@ module QueryPatch
       @available_filters = available_filters_without_time_tracker
 
       # use raw Query as template to get the content for two complex fields without copying the source
-      tq = Query.new
+      tq = IssueQuery.new
 
       # unless-statements are used as workaround to get the code working for the migration file "011_add_default_tt_query"
       @available_filters['tt_project'] = tq.available_filters_without_time_tracker["project_id"].clone unless tq.available_filters_without_time_tracker["project_id"].nil?
@@ -285,4 +287,4 @@ module QueryPatch
   end
 end
 
-Query.send(:include, QueryPatch)
+IssueQuery.send(:include, QueryPatch)
