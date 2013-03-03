@@ -30,6 +30,7 @@ en:
   suspend_time_tracker: "suspend"
   suspend_time_tracker_error: "Fail to suspend the time tracker"
   success_add_booking: "Successful added booking"
+  error_add_booking_no_issue_or_project: "Must specify issue or project to add booking!"
   time_tracker_already_running_error: "A time tracker is already running"
   time_tracker_continue_booking_fail: "Time Tracker could not be continued"
   time_tracker_delete_fail: "The time tracker has already been closed/deleted"

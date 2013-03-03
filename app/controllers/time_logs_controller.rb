@@ -29,9 +29,14 @@ class TimeLogsController < ApplicationController
   def add_booking(tl)
     time_log = TimeLog.where(:id => tl[:id]).first
     issue = issue_from_id(tl[:issue_id])
-    time_log.add_booking(:start_time => tl[:start_time], :stop_time => tl[:stop_time], :spent_time => tl[:spent_time],
+    project = project_from_id(tl[:project_id])
+    if(issue.nil? and project.nil?)
+      flash[:error] = l(:error_add_booking_no_issue_or_project)
+    else
+      time_log.add_booking(:start_time => tl[:start_time], :stop_time => tl[:stop_time], :spent_time => tl[:spent_time],
                          :comments => tl[:comments], :issue => issue, :project_id => tl[:project_id])
-    flash[:notice] = l(:success_add_booking)
+      flash[:notice] = l(:success_add_booking)
+    end
   rescue BookingError => e
     flash[:error] = e.message
   end
@@ -51,14 +56,14 @@ class TimeLogsController < ApplicationController
     time_logs = TimeLog.where(:id => params[:time_log_ids]).all
     time_logs.each do |item|
       if item.user_id == User.current.id || User.current.admin?
-        if item.time_bookings.count == 0
-          item.destroy
-        else
-          booked_time = item.hours_spent - item.bookable_hours
-          item.stopped_at = item.started_on + booked_time.hours
-          item.bookable = false
-          item.save!
-        end
+      if item.time_bookings.count == 0
+        item.destroy
+      else
+        booked_time = item.hours_spent - item.bookable_hours
+        item.stopped_at = item.started_on + booked_time.hours
+        item.bookable = false
+        item.save!
+      end
       end
     end
     redirect_to :controller => 'tt_overview'
