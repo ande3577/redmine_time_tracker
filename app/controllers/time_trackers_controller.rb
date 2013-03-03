@@ -67,7 +67,8 @@ class TimeTrackersController < ApplicationController
       redirect_to :back
     else
       unless params[:time_tracker].nil?
-        @time_tracker.issue_id = params[:time_tracker][:issue_id]
+        @time_tracker.issue_id = params[:time_tracker][:issue_id] unless params[:time_tracker][:issue_id].nil? or params[:time_tracker][:issue_id].empty?
+        @time_tracker.project_id = params[:time_tracker][:project_id] unless params[:time_tracker][:project_id].nil? or params[:time_tracker][:project_id].empty?
         @time_tracker.comments = params[:time_tracker][:comments]
       end
       @time_tracker.stop
