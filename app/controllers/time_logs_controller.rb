@@ -48,9 +48,9 @@ class TimeLogsController < ApplicationController
   end
 
   def delete
-    if User.current.admin?
-      time_logs = TimeLog.where(:id => params[:time_log_ids]).all
-      time_logs.each do |item|
+    time_logs = TimeLog.where(:id => params[:time_log_ids]).all
+    time_logs.each do |item|
+      if item.user_id == User.current.id || User.current.admin?
         if item.time_bookings.count == 0
           item.destroy
         else
