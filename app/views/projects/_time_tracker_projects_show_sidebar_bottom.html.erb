@@ -1,4 +1,4 @@
-<% if !User.current.nil? && User.current.pref[:time_tracker_enabled] && !@project.nil?%>
+<% if !User.current.nil? && User.current.pref[:time_tracker_enabled] && !@project.nil? && User.current.allowed_to?(:log_time, @project) %>
 	<h3><%= l( :time_tracker_label_account_settings ) %></h3>
 	
 	<% if time_tracker_for(User.current).nil? %>
