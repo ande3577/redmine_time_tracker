@@ -60,6 +60,7 @@
               </div>
               <%= f.submit l(:stop_time_tracker) %>
           <% end %>
+          <%= link_to l(:button_cancel), :controller => :time_trackers, :action => :cancel %>
       <% end %>
       <%= javascript_include_tag 'time_tracker_control.js', :plugin => 'redmine_time_tracker' %>
 <% end %>

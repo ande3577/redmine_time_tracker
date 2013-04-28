@@ -1,5 +1,6 @@
 match '/time_trackers/stop', :to => 'time_trackers#stop', :via => [:get, :put, :post]
 match '/time_trackers/start', :to => 'time_trackers#start', :via => [:post, :get]
+match '/time_trackers/cancel', :to => 'time_trackers#cancel', :via => [:post, :get]
 match '/time_trackers/update', :to => 'time_trackers#update', :via => [:get, :put]
 match '/time_trackers/add_status_transition', :to => 'time_trackers#add_status_transition', :via => [:get, :post]
 match '/time_trackers/delete_status_transition', :to => 'time_trackers#delete_status_transition', :via => [:get, :post]

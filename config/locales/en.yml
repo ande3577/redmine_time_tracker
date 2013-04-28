@@ -94,4 +94,5 @@ en:
   time_tracker_zombie_legend: "zombie time tracker"
   field_time_tracker_enabled: "Time Tracker Enabled"
   time_tracker_stop_on_close: "Stop on close"
+  time_tracker_cancelled: "Time Tracker Cancelled"
 

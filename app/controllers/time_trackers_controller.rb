@@ -88,6 +88,35 @@ class TimeTrackersController < ApplicationController
       end
     end
   end
+  
+  def cancel
+    @time_tracker = get_current
+    if @time_tracker.nil?
+      flash[:error] = l(:no_time_tracker_running)
+      redirect_to :back
+    else
+       @time_tracker.destroy
+       if @time_tracker.destroyed?
+         flash[:error] = l(:time_tracker_cancelled) 
+       else
+         flash[:error] = l(:stop_time_tracker_error)
+       end
+    end
+    @time_tracker = get_current
+    respond_to do |format|
+      format.html { redirect_to_referer_or {render :text => ('Time tracking started.'), :layout => true}}
+      format.js do
+        render(:update) do |page|
+          issue = Issue.where(:id => params[:time_tracker][:issue_id]).first
+          if !issue.nil?
+            c = time_tracker_css(User.current())
+            page << %|$$(".#{c}").each(function(el){el.innerHTML="#{escape_javascript time_tracker_link(User.current, {:issue => issue, :project => project})}"});|
+          end
+        end
+      end
+    end
+
+  end
 
   def delete
     time_tracker = TimeTracker.where(:id => params[:id]).first
