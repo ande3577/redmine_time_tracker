@@ -119,9 +119,9 @@ class TimeBooking < ActiveRecord::Base
 
   def comments
     if self.virtual
-      self.virtual_comment.comments
+      self.virtual_comment.nil? ? "" : self.virtual_comment.comments
     else
-      self.time_entry.comments
+      self.time_entry.nil? ? "" : self.time_entry.comments
     end
   end
 
