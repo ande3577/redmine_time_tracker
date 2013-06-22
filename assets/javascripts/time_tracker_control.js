@@ -5,13 +5,18 @@ function updateTTControllerForm(obj) {
         var form = obj;
         $.ajax({url:'time_trackers/update?' + $("#" + form.id).serialize(),
             type:'PUT',
+            dataType: 'json',
             success:function (transport) {
                 var tt = transport.time_tracker;
                 form.time_tracker_issue_id.value = tt.issue_id;
-                (tt.issue_id == null) ? $(form.project_id_select).attr('disabled', false) : $(form.project_id_select).attr('disabled', true);
+                if (tt.issue_id == null) {
+                	$(form.time_tracker_project_id).prop('disabled', false);
+                } else {
+                	$(form.time_tracker_project_id).prop('disabled', true);
+                }
                 form.time_tracker_comments.value = tt.comments;
                 form.time_tracker_project_id.value = tt.project_id;
-                select_options = form.project_id_select;
+                select_options = form.time_tracker_project_id.options;
                 for (i = 0; i < select_options.length; i++) {
                     if (select_options[i].value == tt.project_id) select_options[i].selected = true;
                 }

@@ -43,7 +43,7 @@
               <div class="task_form_bottom_fields">
                 <div class="task_form_sub_fields">
                   <div class="input_hint"><%= l(:time_tracker_label_project) %></div>
-                  <div class="task_form_input"><%= f.select :project_id, proj_list, :disabled => !@time_tracker.issue_id.nil? %></div>
+                  <div class="task_form_input"><%= f.select :project_id, proj_list, {}, { :disabled => !@time_tracker.issue_id.nil?, :onchange => "updateTTControllerForm(this.form)"  } %></div>
                 </div>
                 <div class="task_form_sub_fields">
                   <!--  TODO refactor conditions for disabling the Time-Inputs to use special Role-settings instead of admin only  -->
