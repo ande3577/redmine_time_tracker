@@ -1,7 +1,7 @@
 class AddDefaultTtQuery < ActiveRecord::Migration
   def up
     IssueQuery.create :tt_query => true,
-                 :is_public => true,
+                 :visibility => IssueQuery::VISIBILITY_PUBLIC,
                  :name => I18n.t(:time_tracker_label_your_time_bookings),
                  :filters => {:tt_user => {:operator => "=", :values => ["me"]}},
                  :group_by => nil,

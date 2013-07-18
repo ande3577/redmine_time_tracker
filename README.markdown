@@ -19,7 +19,8 @@ The advanced features are going to be implemented soon.
 My goal is to have a release with all main-features within the next two month
 (that means till 08/2012)
 
-The master branch supports redmine 2.3 only. Previous versions should use 2.2-branch.
+The master branch supports redmine 2.4 only. Previous versions should use 2.3-branch 
+or 2.2-branch.
 
 ![Overview](/img/TimeTracker-Overview.png "Overview")
 
