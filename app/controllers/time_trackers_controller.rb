@@ -3,6 +3,11 @@ class TimeTrackersController < ApplicationController
 
   menu_item :time_tracker_menu_tab_overview
   before_filter :js_auth, :authorize_global
+  before_filter :get_issue, :only => [ :start, :stop ]
+  before_filter :get_project, :only => [ :start, :stop ]
+  before_filter :get_next_issue, :only => :start
+  before_filter :get_next_project, :only => :start
+  before_filter :get_comment, :only => [ :start, :stop ]
 
   helper :issues
   include IssuesHelper
@@ -14,32 +19,24 @@ class TimeTrackersController < ApplicationController
 
   # we could start an empty timeTracker to track time without any association.
   # we also can give some more information, so the timeTracker could be automatically associated later.
-  def start(args = {})
-    default_args= {:issue_id => nil, :project_id => nil, :comments => nil}
-    args = default_args.merge(args)
-
+  def start
     @time_tracker = get_current
     if @time_tracker.new_record?
-      # TODO work out a nicer way to get the params from the form
-      unless params[:time_tracker].nil?
-        args[:issue_id]=params[:time_tracker][:issue_id] if args[:issue_id].nil?
-        args[:project_id]=params[:time_tracker][:project_id] if args[:project_id].nil?
-        args[:comments]=params[:time_tracker][:comments] if args[:comments].nil?
-      end
       # parse comments for issue-id
-      if args[:issue_id].nil? && !args[:comments].nil? && args[:comments].strip.match(/\A#\d?\d*/)
-        cut = args[:comments].strip.partition(/#\d?\d*/)
-        issue_id = cut[1].sub(/#/, "").to_i
-        unless help.issue_from_id(issue_id).nil?
-          args[:issue_id] = issue_id
-          args[:comments] = cut[2].strip
+      logger.debug "\n@comment = #{@comments}\n"
+      if @issue.nil? && !@comments.nil? && @comments.strip.match(/\A#\d?\d*/)
+        cut = @comments.strip.partition(/#\d?\d*/)
+        @issue_id = cut[1].sub(/#/, "").to_i
+        logger.debug "\n@issue_id = #{@issue_id}\n"
+        unless help.issue_from_id(@issue_id).nil?
+          @issue = Issue.where(:id => @issue_id).first
+          @comments = cut[2].strip
         end
       end
 
-
-      @time_tracker = TimeTracker.new(:issue_id => args[:issue_id], :project_id => args[:project_id], :comments => args[:comments])
+      @time_tracker = TimeTracker.new(:issue_id => @issue_id, :project_id => @project_id, :comments => @comments)
       if @time_tracker.start
-        apply_status_transition(Issue.where(:id => args[:issue_id]).first) unless Setting.plugin_redmine_time_tracker[:status_transitions] == nil
+        apply_status_transition(@issue) unless Setting.plugin_redmine_time_tracker[:status_transitions] == nil
       else
         flash[:error] = l(:start_time_tracker_error)
       end
@@ -48,15 +45,7 @@ class TimeTrackersController < ApplicationController
     end
     respond_to do |format|
       format.html { redirect_to_referer_or {render :text => ('Time tracking started.'), :layout => true}}
-      format.js do
-        render(:update) do |page|
-          issue = Issue.where(:id => @time_tracker.issue_id).first
-          if !issue.nil?
-            c = time_tracker_css(User.current())
-            page << %|$$(".#{c}").each(function(el){el.innerHTML="#{escape_javascript time_tracker_link(User.current, {:issue => issue, :project => project })}"});|
-          end
-        end
-      end
+      format.js { render :partial => "time_trackers/time_tracker_sidebar_control", :locals => { :project => @next_project, :issue => @next_issue } }
     end
   end
 
@@ -67,9 +56,9 @@ class TimeTrackersController < ApplicationController
       redirect_to :back
     else
       unless params[:time_tracker].nil?
-        @time_tracker.issue_id = params[:time_tracker][:issue_id] unless params[:time_tracker][:issue_id].nil? or params[:time_tracker][:issue_id].empty?
-        @time_tracker.project_id = params[:time_tracker][:project_id] unless params[:time_tracker][:project_id].nil? or params[:time_tracker][:project_id].empty?
-        @time_tracker.comments = params[:time_tracker][:comments]
+        @time_tracker.issue_id = @issue_id unless @issue_id.nil?
+        @time_tracker.project_id =  @project_id unless @project_id.nil?
+        @time_tracker.comments = @comments
       end
       @time_tracker.stop
       flash[:error] = l(:stop_time_tracker_error) unless @time_tracker.destroyed?
@@ -77,15 +66,7 @@ class TimeTrackersController < ApplicationController
 	@time_tracker = get_current
     respond_to do |format|
       format.html { redirect_to_referer_or {render :text => ('Time tracking started.'), :layout => true}}
-      format.js do
-        render(:update) do |page|
-          issue = Issue.where(:id => params[:time_tracker][:issue_id]).first
-          if !issue.nil?
-            c = time_tracker_css(User.current())
-            page << %|$$(".#{c}").each(function(el){el.innerHTML="#{escape_javascript time_tracker_link(User.current, {:issue => issue, :project => project})}"});|
-          end
-        end
-      end
+      format.js { render :partial => "time_trackers/time_tracker_sidebar_control", :locals => { :project => @project, :issue => @issue } }
     end
   end
   
@@ -191,6 +172,59 @@ class TimeTrackersController < ApplicationController
     respond_to do |format|
       format.json { User.current = User.where(:id => session[:user_id]).first }
       format.any {}
+    end
+  end
+  
+  def get_issue
+    begin
+      @issue = Issue.where(:id => params[:issue_id]).first unless params[:issue_id].nil?
+      @issue = Issue.where(:id => params[:time_tracker][:issue_id]).first if @issue.nil?
+      @issue_id = @issue.id
+    rescue
+      @issue = nil
+      @issue_id = nil
+    end
+  end
+  
+  def get_project
+    begin
+      @project = Project.where(:id => params[:project_id]).first unless params[:project_id].nil?
+      @project = Project.where(:id => params[:time_tracker][:project_id]).first if @project.nil?
+      @project_id = @project.id
+    rescue
+      @project = nil
+      @project_id = nil
+    end
+  end
+  
+def get_next_issue
+    begin
+      @next_issue = Issue.where(:id => params[:next_issue_id]).first unless params[:next_issue_id].nil?
+      @next_issue = Issue.where(:id => params[:time_tracker][:next_issue_id]).first if @next_issue.nil?
+      @next_issue_id = @next_issue.id
+    rescue
+      @next_issue = nil
+      @next_issue_id = nil
+    end
+  end
+  
+  def get_next_project
+    begin
+      @next_project = Project.where(:id => params[:next_project_id]).first unless params[:next_project_id].nil?
+      @next_project = Project.where(:id => params[:time_tracker][:next_project_id]).first if @next_project.nil?
+      @next_project_id = @next_project.id
+    rescue
+      @next_project = nil
+      @next_project_id = nil
+    end
+  end
+  
+  def get_comment
+    begin
+      @comments = params[:comments]
+      @comments = params[:time_tracker][:comments] if @comments.nil?
+    rescue
+      @comments = nil
     end
   end
 end

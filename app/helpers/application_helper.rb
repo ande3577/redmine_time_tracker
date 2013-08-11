@@ -46,6 +46,13 @@ module ApplicationHelper
   
   def time_tracker_link(user, options)
      time_tracker = time_tracker_for(user) 
+     html = ""
+     time_tracker_options = {:project_id => options[:project].id}
+     time_tracker_options.merge!(:issue_id => options[:issue].id) unless options[:issue].nil?
+     time_tracker_options.merge!(:next_issue_id => options[:next_issue].id) unless options[:next_issue].nil?
+     time_tracker_options.merge!(:next_project_id => options[:next_project].id) unless options[:next_project].nil?
+     
+     
      if !time_tracker.nil?
        stop_label = '' 
        # A time tracker exists, display the stop action
@@ -56,24 +63,35 @@ module ApplicationHelper
        else stop_label += ' ' + time_tracker.comments.to_s
        end 
        
-       "#{link_to l(:stop_time_tracker).capitalize + stop_label,
-         {:controller => '/time_trackers', :action => 'stop', :time_tracker => {}},
-         :class => 'icon icon-stop'}<br>".html_safe
+       link_label = l(:stop_time_tracker).capitalize + stop_label
+       url_options = { :controller => '/time_trackers', :action => 'stop', :time_tracker => time_tracker_options }
+       link_class = 'icon icon-stop'
+       link_id = 'time_tracker_stop'
      elsif !options[:project].nil? and user.allowed_to?(:use_time_tracker_plugin, nil, :global => true) and user.allowed_to?(:log_time, options[:project])
         # No time tracker is running, but the user has the rights to track time on this issue 
         # Display the start time tracker action
        if options[:issue].nil?
-         "#{link_to l(:start_time_tracker).capitalize + ' ' +  options[:project].name,
-             {:controller => '/time_trackers', :action => 'start', :time_tracker => {:project_id => options[:project].id}},
-             :class => 'icon icon-start'}<br>".html_safe
+         link_label = l(:start_time_tracker).capitalize + ' ' +  options[:project].name
+         link_id = "time_tracker_start_#{options[:project].identifier}"
        else
-          "#{link_to l(:start_time_tracker).capitalize + ' #' +  options[:issue].id.to_s,
-             {:controller => '/time_trackers', :action => 'start', :time_tracker => {:issue_id => options[:issue].id,
-             :project_id => options[:project].id}},
-             :class => 'icon icon-start'}<br>".html_safe
-       end 
+         link_label = l(:start_time_tracker).capitalize + ' #' +  options[:issue].id.to_s
+         link_id = "time_tracker_start_issue_#{options[:issue].id}"
+       end
+       url_options = { :controller => '/time_trackers', :action => 'start', :time_tracker => time_tracker_options }
+       link_class = 'icon icon-start' 
+     end
 
-     end 
+     html << link_to(link_label, url_for(url_options), { :class => link_class, :id => link_id})
+     html << "<br>"     
+     if options[:from_sidebar]
+       html << javascript_tag do "$('##{link_id}').click(function (event) {
+           time_tracker_action('#{url_for(url_options.merge(:format => :js))}');
+           event.preventDefault(); // Prevent link from following its href
+         });".html_safe
+       end
+     end
+       
+     html.html_safe 
   end
   
   def time_tracker_css(object)

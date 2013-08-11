@@ -1,3 +1,14 @@
+// ================== helpers for sidebar ============================
+function time_tracker_action(url) {
+    $.ajax({url:url,
+        type:'POST',
+        dataType:'html', 
+        success:function (transport) {
+          $('#time_tracker_sidebar_links').html(transport);
+        },
+    });
+}
+
 // ================== helpers for date-filter chooser ============================
 // this function is unused till the date-shifter will be ported to jquery too
 
