@@ -1,0 +1,11 @@
+<% if time_tracker_for(User.current).nil? %>
+  <% unless issue.nil? %>
+    <%= time_tracker_button_tag(User.current, :project => project, :issue => issue, :next_issue => issue, :next_project => project, :from_sidebar => true ) %>
+  <% end %>
+  
+  <% project.self_and_ancestors.reverse.each do |proj| %>
+    <%= time_tracker_button_tag(User.current, :project => proj, :issue => nil, :next_issue => issue, :next_project => project, :from_sidebar => true )  %>
+  <% end %>
+<% else %>
+  <%= time_tracker_button_tag(User.current, :project => project, :issue => issue, :from_sidebar => true ) %>
+<% end %>
