@@ -81,13 +81,15 @@ module ApplicationHelper
        link_class = 'icon icon-start' 
      end
 
-     html << link_to(link_label, url_for(url_options), { :class => link_class, :id => link_id})
-     html << "<br>"     
-     if options[:from_sidebar]
-       html << javascript_tag do "$('##{link_id}').click(function (event) {
-           time_tracker_action('#{url_for(url_options.merge(:format => :js))}');
-           event.preventDefault(); // Prevent link from following its href
-         });".html_safe
+     unless url_options.nil?
+       html << link_to(link_label, url_for(url_options), { :class => link_class, :id => link_id})
+       html << "<br>"     
+       if options[:from_sidebar]
+         html << javascript_tag do "$('##{link_id}').click(function (event) {
+             time_tracker_action('#{url_for(url_options.merge(:format => :js))}');
+             event.preventDefault(); // Prevent link from following its href
+           });".html_safe
+         end
        end
      end
        
