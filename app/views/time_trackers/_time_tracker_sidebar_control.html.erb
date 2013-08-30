@@ -7,5 +7,5 @@
     <%= time_tracker_button_tag(User.current, :project => proj, :issue => nil, :next_issue => issue, :next_project => project, :from_sidebar => true )  %>
   <% end %>
 <% else %>
-  <%= time_tracker_button_tag(User.current, :project => project, :issue => issue, :from_sidebar => true ) %>
+  <%= time_tracker_button_tag(User.current, :next_project => project, :next_issue => issue, :from_sidebar => true ) %>
 <% end %>
