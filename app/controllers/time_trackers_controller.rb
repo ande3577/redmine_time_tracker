@@ -5,8 +5,8 @@ class TimeTrackersController < ApplicationController
   before_filter :js_auth, :authorize_global
   before_filter :get_issue, :only => [ :start, :stop ]
   before_filter :get_project, :only => [ :start, :stop ]
-  before_filter :get_next_issue, :only => :start
-  before_filter :get_next_project, :only => :start
+  before_filter :get_next_issue, :only => [:start, :stop]
+  before_filter :get_next_project, :only => [:start, :stop]
   before_filter :get_comment, :only => [ :start, :stop ]
 
   helper :issues
@@ -66,7 +66,7 @@ class TimeTrackersController < ApplicationController
 	@time_tracker = get_current
     respond_to do |format|
       format.html { redirect_to_referer_or {render :text => ('Time tracking started.'), :layout => true}}
-      format.js { render :partial => "time_trackers/time_tracker_sidebar_control", :locals => { :project => @project, :issue => @issue } }
+      format.js { render :partial => "time_trackers/time_tracker_sidebar_control", :locals => { :project => @next_project, :issue => @next_issue } }
     end
   end
   

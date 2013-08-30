@@ -47,8 +47,7 @@ module ApplicationHelper
   def time_tracker_link(user, options)
      time_tracker = time_tracker_for(user) 
      html = ""
-     time_tracker_options = {:project_id => options[:project].id}
-     time_tracker_options.merge!(:issue_id => options[:issue].id) unless options[:issue].nil?
+     time_tracker_options = {}
      time_tracker_options.merge!(:next_issue_id => options[:next_issue].id) unless options[:next_issue].nil?
      time_tracker_options.merge!(:next_project_id => options[:next_project].id) unless options[:next_project].nil?
      
@@ -70,6 +69,8 @@ module ApplicationHelper
      elsif !options[:project].nil? and user.allowed_to?(:use_time_tracker_plugin, nil, :global => true) and user.allowed_to?(:log_time, options[:project])
         # No time tracker is running, but the user has the rights to track time on this issue 
         # Display the start time tracker action
+       time_tracker_options.merge!(:project_id => options[:project].id)
+       time_tracker_options.merge!(:issue_id => options[:issue].id) unless options[:issue].nil?
        if options[:issue].nil?
          link_label = l(:start_time_tracker).capitalize + ' ' +  options[:project].name
          link_id = "time_tracker_start_#{options[:project].identifier}"
