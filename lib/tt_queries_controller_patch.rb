@@ -60,7 +60,7 @@ module QueriesControllerPatch
       @query.attributes = params[:query]
       @query.tt_query = (params[:tt_query] == "true" ? true : false)
       @query.project = nil if params[:query_is_for_all]
-      @query.visibility = IssueQuery::VISIBILITY_PRIVATE
+      @query.visibility = IssueQuery::VISIBILITY_PRIVATE unless User.current.allowed_to?(:manage_public_queries, @project) || User.current.admin?
       @query.build_from_params(params)
       @query.column_names = nil if params[:default_columns]
 
